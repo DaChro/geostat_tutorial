@@ -1,0 +1,306 @@
+---
+title: "Einführung in die Geostatistik, SoSe 2024"
+engine: knitr
+filters:
+ - webr
+---
+
+
+
+```{css, echo=FALSE}
+.list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {
+    z-index: 2;
+    color: #fff;
+    background-color: #7AB629;
+    border-color: #337ab7;
+}
+a:link {
+  color: #7AB629;
+}
+```
+
+
+
+_Edzer Pebesma, Christian Knoth_ - **Institut für Geoinformatik - Universität Münster** - christian.knoth@uni-muenster.de
+
+---
+
+## "Übung 0": Einführung in R
+_**Musterlösung**_
+
+Dieses Übungsblatt wird einen kleinen Einstieg in R geben und soll helfen die erste Hürden der R-Befehlszeile zu nehmen.
+
+R ist unter [r-project.org](http://www.r-project.org/) frei verfügbar. Zusätzliche Informationen finden sich im [R-Intro manual](http://cran.r-project.org/doc/manuals/R-intro.pdf) und in den online FAQs. R ist eine open-source, befehlszeilenbasierte statistische Programmierumgebung mit einer sehr einfachen grafischen Benutzerschnittstelle. Analysen werden in R nicht durch eine Folge von Mausklicks, sondern durch eine Folge von eingegebenen Befehlen ausgeführt.
+
+Eine hilfreiches zusätzliches Programm, um den Umgang mit R zu vereinfachen, ist
+[Rstudio](http://www.rstudio.org). Rstudio bietet eine umfangreiche Datenanalyseumgebung mit integrierter Hilfe und Befehlsvervollständigung, eine Übersicht über den aktuellen workspace und den generierten Grafiken. Rstudio kann als Alternative zur normalen R Benutzeroberfläche verwendet werden.
+
+## Installation von R
+R kann für Windows, Mac, und Linux unter [r-project.org](http://www.r-project.org/) heruntergeladen werden. Durch Navigieren durch einige Links auf der Webseite erhält man eine ausführbare Datei, die dann wie gewöhnliche Programme installiert werden kann. 
+Nach der Installation kann R z.B. durch erstellte Verknüpfungen auf dem Desktop gestartet werden.
+
+
+## Installation von RStudio
+Rstudio ist ein eigenständiges Programm, das sich automatisch mit der R-Installation auf dem Rechner verbindet (R muss zuvor installiert sein.). Das Programm kann einfach unter [rstudio.org](https://www.rstudio.com/products/rstudio/download/) heruntergeladen, installiert und gestartet werden. Hinweis: Beim Herunterladen die open-source (nicht kostenpflichtige) Version von **RStudio Desktop** auswählen (nicht R Studio Server).
+
+
+## Erste Schritte
+* Lege ein Verzeichnis auf deinem Computer für diesen Kurs an (z.B. unter Eigene Dateien\\Geostatistik). Es empfiehlt sich dieses Verzeichnis für alle Übungen in diesem Kurs zu nutzen. Starte anschließend R oder Rstudio und setze das Arbeitsverzeichnis auf den erstellten Ordner durch die Funktion `setwd(choose.dir())`. 
+
+* Löse folgende Aufgaben unter Verwendung der Hilfefunktion. Ein Fragezeichen gefolgt von einer R-Funktion ruft die zugehörige Hilfeseite auf (z.B. `?sqrt` für die Wurzelfunktion `sqrt`). Die Beispiele am Ende der Datei sind oft am hilfreichsten. Die Hilfeseiten werden je nach Einstellung im Browser, oder direkt in Rstudio aufgerufen. 
+
+
+::: callout-caution
+## Aufgabe 1
+Die R-Befehlszeile kann auch als Taschenrechner genutzt werden; führe einige Rechnungen aus. Der Zuweisungs-Operator `<-` speichert Werte, Objekte oder Funktionen in Variablen, z.B wird mit `a <- 5` einer Variablen `a` der Wert 5 zugewiesen (sollte die Variable bereits existieren, wird sie  durch diesen Befehl überschrieben, ansonsten wird sie neu erzeugt). Führe folgende Rechnungen durch und speichere ihre Ergebnisse in deinem workspace (weise sie jeweils Variablen Deiner Wahl zu). Wie lässt sich die letzte Rechnung durch Variablen einfacher in R ausführen?
+
+a) $$\frac{5}{5+345}$$
+b) $$2 \cdot \sin(90^\circ)$$
+c) $$\sqrt{16}+\sqrt{25}$$
+d) $$\frac{\frac{5}{5+345}+2 \cdot \sin(90^\circ)}{\sqrt{16}+\sqrt{25}}$$
+
+:::
+
+::: {.callout-tip collapse="true"}
+
+## Lösung
+
+```{webr-r}
+#a)
+a <- 5/(5+345)
+a
+#b)
+b <- 2 * sin(pi/2)
+b
+#c)
+c <- sqrt(16)+sqrt(25)
+c
+#d)
+((5/(5+345)) + (2 * sin(pi/2))) / (sqrt(16)+sqrt(25))
+(a+b)/c # einfacher und lesbarer durch Nutzung von Variablen
+```
+
+Indem die Zwischenergebnisse der ersten drei Rechnungen in Variablen (`a`, `b` und `c`) gespeichert werden kann der letzte Ausdruck gut lesbar aufgeschrieben werden. Die Sinusfunktion erwartet Eingaben im Bogenmaß. Winkel im Gradmaß können durch die Formel $\varphi_{\textrm{RAD}} = \varphi_{\textrm{DEG}} \cdot \frac{\pi}{180}$ umgerechnet werden.
+
+:::
+---
+
+::: callout-caution
+## Aufgabe 2
+Erzeuge einen Vektor von 0 bis 1 in 0,1-Schritten`(0, 0.1, 0.2, ..., 1)` mit `seq()` und den Vektor `(1, 1, 1, 1, 1, 5, 5, 5)` mit `rep()`. Verwende den ersten Vektor und erzeuge durch addieren / multiplizieren die folgenden Vektoren: `(1, 1.1, 1.2, ..., 2)` und  `(2, 2.2, 2.4, ..., 4)`.
+
+:::
+
+::: {.callout-tip collapse="true"}
+
+## Lösung
+
+```{webr-r}
+#ersten Vektor erzeugen und in die Variable a schreiben
+a <- seq(from = 0, to=1, by=0.1)
+a
+
+#zweiten Vektor erzeugen, diesen schreiben wir nicht in eine Varbiable 
+rep(x=c(1,5), times = c(5, 3))
+
+#Erzeugen der gewünschten Vektoren durch Addieren/Multiplizieren
+a + 1
+2*(a+1)
+```
+
+Die Funktion `seq` kann auf verschiedene Arten regelmäßige Zahlensequenzen generieren. Drei der folgenden Parameter müssen normalerweise angegeben werden und der 4. Wert kann dann automatisch berechnet werden:
+
+* `from` bestimmt den Anfangswert der Sequenz,
+* `to` bestimmt den Endwert der Sequenz,
+* `length.out` bestimmt aus wie vielen Zahlen die Sequenz insgesamt bestehen soll
+* und `by` bestimmt die Differenz aufeinander folgender Zahlen.
+
+Um den Vektor `(1, 1, 1, 1, 1, 5, 5, 5)` mit `rep()` zu erzeugen, gibt es verschiedene Möglichkeiten. Man könnte zunächst je einen Vektor mit den 1en und mit den 5en über `rep()` erzeugen und diese beiden mit `c()` kombinieren. Einfacher ist es allerdings, die Möglichkeit zu nutzen, dass `rep()` nicht nur eine, sondern auch mehrere verschiedene Zahlen wiederholen kann. Hierfür müssen die Zahlen als Vektor übergeben werden. Ebenso muss für jede Zahl die Anzahl an Wiederholungen angegeben werden, indem das Argument `times` ebenfalls einen Vektor statt einer einzelnen Zahl übergeben bekommt. In unserem Beispiel gibt die `5` die Anzahl an Wiederholungen der ersten Zahl (`1`) und die `3` die Anzahl an Wiederholungen der zweiten Zahl (`5`) an. Übrigens: Wenn man für das Argument `times` statt eines Vektors nur eine Zahl übergibt, obwohl im ersten Argument ein Vektor steht, wird einfach der ganze Vektor (also die Zahlenfolge) entsprechend oft wiederholt (probiere `rep(x=c(1,5), times = 5)` und schau, was passiert).
+
+Um schließlich aus dem ersten Vektor die beiden in dieser Teilaufgabe geforderten Ergebnisvektoren zu erzeugen, nutzen wir einfach die Tatsache, dass die Operatoren `+` und `*` bei Vektoren in R elementweise ausgeführt werden (also z.B.: `erstes Element des Ergebnisvektors`= `erstes Element des ersten Vektors` + `erstes Element des zweiten Vektors` usw...) . 
+
+:::
+
+---
+
+::: callout-caution
+## Aufgabe 3
+Führe den Befehl `c(1, 3, 7) * c(5, 8, 2)` und `c(1, 3, 7) %*% c(5, 8, 2)` aus (beachte, dass `c()` als Funktion verstanden wird). Was ist an den Berechnungen in R speziell verglichen mit den Vektorrechnungen in der Mathematik?
+
+:::
+
+::: {.callout-tip collapse="true"}
+
+## Lösung
+
+```{webr-r}
+c(1, 3, 7) * c(5, 8, 2) # Elementweise Multiplikation
+c(1, 3, 7) %*% c(5, 8, 2) # Skalarprodukt
+```
+
+Durch Ausführen der normalen Multiplikation (Symbol `*`) werden zwei Vektoren elementweise multipliziert (s.o.), das Ergebnis ist also wieder ein Vektor gleicher Länge. Der Operator `%*%` hingegen ist der Matrixmultiplikationsoperator. Dieser Operator kann auch mit zwei Vektoren verwendet werden, um das Skalarprodukt dieser Vektoren zu berechnen (er bildet dann also die elementweisen Produkte und summiert diese anschließend). Dies ist mathematisch nicht äquivalent, da eigentlich der erste Vektor als Zeilenvektor und der zweite Vektor als Spaltenvektor transponiert werden müsste, um das Skalarprodukt als Matrixmultiplikation zu interpretieren. 
+
+:::
+---
+
+::: callout-caution
+## Aufgabe 4
+Erzeuge eine Matrix (`?matrix`) mit Zahlen von 1 bis 12, die drei Spalten hat (beginnend mit 1 2 3 in der ersten Zeile). Ersetze die 5 durch 15 und multipliziere die entstehende Matrix mit 4. Was passiert?
+
+:::
+
+::: {.callout-tip collapse="true"}
+
+## Lösung
+
+```{webr-r}
+A <- matrix(seq(1,12,by=1),nrow=4,ncol=3, byrow = TRUE)
+A
+A[2,2]  <-  15  #anstatt '<-' würde auch '=' funktionierens
+A
+A * 4
+```
+
+Um in R einen Vektor in eine Matrix umzuwandeln, muss durch die Parameter `nrow` bzw. `ncol` angegeben werden, wie viele Zeilen und Spalten die Matrix haben soll (hier 3 Spalten und 4 Zeilen). Dabei reicht es, einen der beiden Parameter anzugeben. Standardmäßig werden Matrizen spaltenweise mit den Elementen des Vektors gefüllt, das heißt die ersten 4 Zahlen entsprechen der ersten Spalte. Um dies zu ändern muss der Parameter `byrow` auf `TRUE` gesetzt werden.
+Einzelne Elemente der Matrix können durch eckige Klammern gelesen und verändert werden. Dabei ist die erste Zahl *immer* die Zeilennummer, die zweite Zahl die Spaltennummer. Diese _Indizes_ fangen in R immer mit 1 an. Die oberste linke Zahl ist also `A[1,1]`. Multipliziert man eine Matrix mit einer Zahl, so werden *alle* Matrixelemente mit der Zahl multipliziert. 
+
+:::
+
+---
+
+::: callout-caution
+## Aufgabe 5
+Weise einer Variablen den Wert 12 zu und erstelle einen Vektor mit den Werten 1,2,3,10,100. Multipliziere beide miteinander und speichere das Ergebnis als Variable `z`. Bilde anschließend die Summe aller Elemente von `z`.
+
+:::
+
+::: {.callout-tip collapse="true"}
+
+## Lösung
+
+```{webr-r}
+a <- 12
+v <- c(1,2,3,10,100)
+z <- a * v
+sum(z)
+```
+
+:::
+
+---
+
+::: callout-caution
+## Aufgabe 6
+
+Erzeuge einen Vektor von -3 bis 3 in 0.1-Schritten. Zeichne die Funktion $y=x^2$, wobei x der gerade erzeugte Vektor ist. Wie sieht die Funktion für $y=1-x^2$ und $y=5+x^2$ aus?
+
+:::
+
+::: {.callout-tip collapse="true"}
+
+## Lösung
+
+```{webr-r}
+x <- seq(-3,3,by=0.1)
+y1 <- x^2
+y2 <- 1-x^2
+y3 <- 5+x^2
+
+plot(x,y1, ylim=c(-10,20), type="l",col="orange",xlab="x", ylab="y", main="Parabeln")
+lines(x,y2,col="purple")
+lines(x,y3,col="darkgreen")
+```
+
+Die Funktion `plot` kann durch zahlreiche Parameter beeinflusst werden (siehe `?plot`). Standardmäßig werden x,y Paare als Punkte angezeigt. Um dies zu ändern kann der Parameter `type=l` gesetzt werden. Außerdem werden im obigen Beispiel noch die Achsen beschriftet und die Farben der Kurven verändert. Damit alle Funktionen in einer einzigen Abbildung angezeigt werden, darf die `plot` Funktion nur ein Mal aufgerufen werden. Die Befehle `lines` und `points` fügen dann weitere Punkte oder Kurven einer bestehenden (vorher erstellten) Abbildung hinzu.
+
+:::
+
+
+---
+
+
+
+::: callout-caution
+## Aufgabe 7
+
+Erzeuge zwei Vektoren mit folgenden Daten: t enthält Mo, Di, Mi, Do, Fr, Sa und m enthält 92, 80, 60, 20, 10, 50. Verbinde beide Vektoren spaltenweise zu einem data.frame und weise diesem den Namen `studie` zu; vergebe die Spaltennamen "Motivation"" für m und "Wochentag" für t. Füge am unteren Ende eine Zeile mit den Elementen So, 100 hinzu.
+
+:::
+
+::: {.callout-tip collapse="true"}
+
+## Lösung
+
+```{webr-r}
+t <- c("Mo","Di","Mi","Do","Fr","Sa") # Wochentage als Zeichenketten
+m <- c( 92,  80,  60,  20,  10,  50)  # Motivation als Zahlen
+
+studie <- data.frame(Motivation = m, Wochentag=t) # Erzeugen des data.frames 
+studie
+neueZeile <- data.frame(Motivation = 100, Wochentag = "So") #Erstellen der neuen Zeile
+studie <- rbind(studie, neueZeile ) # Anfügen der neuen Zeile
+studie
+```
+
+
+
+Um einem data frame eine Zeile hinzuzufügen, kann der Befehl `rbind()` verwendet werden. Dieser verbindet zwei data frames. Hier erzeugen wir einen einzeiligen data frame mit der neuen Zeile und fügen diesen über `rbind()` mit dem ursprünglichen data frame zusammen.
+
+:::
+
+---
+
+::: callout-caution
+## Aufgabe 8
+Lade die Datei `students.rdata` aus dem Learnweb herunter und kopiere sie in den erstellten Geostatistik Ordner. Lade die Daten anschließend durch den Befehl `load("students.rdata")`. Im R Workspace ist nun ein `data.frame` mit dem Namen `students` vorhanden. Wende die Funktionen `str(students)` und `summary(students)` an und beantworte folgende Fragen:
+
+* Wie groß ist der Stichprobenumfang, wie viele Studierende haben an der Umfrage teilgenommen?
+* Welche Variablen wurden erfasst?
+* Worin und warum unterscheidet sich die Ausgabe für `Gender`, `EyeColor`, `Iam`, `Country` und `FieldOfStudies` von anderen Variablen?
+    
+:::
+  
+
+::: {.callout-tip collapse="true"}
+
+## Lösung
+
+```{r,eval=FALSE}
+load("data/students.rdata")
+```
+```{webr-r}
+#| context: setup
+
+# Download a dataset
+download.file(
+  'https://raw.githubusercontent.com/DaChro/geostat_ex/main/data/students.rdata',
+  'students.rdata'
+)
+load("students.rdata")
+
+```
+
+```{webr-r}
+str(students)
+```
+
+```{webr-r}
+summary(students)
+```
+
+
+Der Stichprobenumfang ist $n=134$. Es wurden die folgenden 9 Variablen erfasst:
+
+* Geschlecht `Gender`
+* Augenfarbe `EyeColor`
+* Alter `Age`
+* Körpergröße `Length`
+* Körpergewicht `Weight`
+* Selbsteinschätzung Körpergröße `Iam`
+* Herkunftsland `Country`
+* Studienfach `FieldOfStudies`
+* Aktuelles Fachsemester `Semester`
+
+Die Variablen `Gender`, `EyeColor`, `Iam`, `Country` und `FieldOfStudies` sind kategorisch und nur nominalskaliert, während andere Variablen wie die Körpergröße rationalskaliert sind. Deshalb liefert die Funktion `summary`  für manche Variablen Mittelwerte, Mediane, etc. anstelle von Häufigkeiten.
+
+:::
